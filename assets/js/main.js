@@ -1,108 +1,120 @@
 const canvas = document.getElementById("canvas");
-let ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d");
 
-// Dimensiones
-const window_height = window.innerHeight / 2;
-const window_width = window.innerWidth / 2;
+let window_width = 600;
+let window_height = 400;
 
-canvas.height = window_height;
 canvas.width = window_width;
+canvas.height = window_height;
 
-canvas.style.background = "#ff8";
+let circles = [];
 
+// Clase con efecto glass + color
 class Circle {
-  constructor(x, y, radius, color, text, speed) {
+  constructor(x, y, radius, speed) {
     this.posX = x;
     this.posY = y;
     this.radius = radius;
-    this.color = color;
-    this.text = text;
 
-    this.speed = speed;
+    this.dx = (Math.random() > 0.5 ? 1 : -1) * speed;
+    this.dy = (Math.random() > 0.5 ? 1 : -1) * speed;
 
-    this.dx = 1 * this.speed;
-    this.dy = 1 * this.speed;
+    this.hue = Math.random() * 360; // 🎨 color dinámico
   }
 
-  draw(context) {
-    context.beginPath();
+  draw(ctx) {
+    ctx.beginPath();
 
-    context.strokeStyle = this.color;
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.font = "20px Arial";
-    context.fillText(this.text, this.posX, this.posY);
+    let gradient = ctx.createRadialGradient(
+      this.posX, this.posY, this.radius * 0.2,
+      this.posX, this.posY, this.radius
+    );
 
-    context.lineWidth = 2;
-    context.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2);
-    context.stroke();
-    context.closePath();
+    gradient.addColorStop(0, `hsla(${this.hue}, 100%, 80%, 0.8)`);
+    gradient.addColorStop(1, `hsla(${this.hue}, 100%, 50%, 0.2)`);
+
+    ctx.fillStyle = gradient;
+    ctx.strokeStyle = `hsla(${this.hue}, 100%, 70%, 0.6)`;
+    ctx.lineWidth = 2;
+
+    ctx.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.closePath();
   }
 
-  update(context) {
-    this.draw(context);
+  update(ctx) {
+    this.draw(ctx);
 
-    // 👉 BORDE DERECHO
     if (this.posX + this.radius >= window_width) {
-      this.posX = window_width - this.radius; // CORRIGE posición
-      this.dx = -this.dx;
+      this.posX = window_width - this.radius;
+      this.dx *= -1;
     }
 
-    // 👉 BORDE IZQUIERDO
     if (this.posX - this.radius <= 0) {
-      this.posX = this.radius; // CORRIGE posición
-      this.dx = -this.dx;
+      this.posX = this.radius;
+      this.dx *= -1;
     }
 
-    // 👉 BORDE SUPERIOR
-    if (this.posY - this.radius <= 0) {
-      this.posY = this.radius; // CORRIGE posición
-      this.dy = -this.dy;
-    }
-
-    // 👉 BORDE INFERIOR
     if (this.posY + this.radius >= window_height) {
-      this.posY = window_height - this.radius; // CORRIGE posición
-      this.dy = -this.dy;
+      this.posY = window_height - this.radius;
+      this.dy *= -1;
     }
 
-    // Movimiento
+    if (this.posY - this.radius <= 0) {
+      this.posY = this.radius;
+      this.dy *= -1;
+    }
+
     this.posX += this.dx;
     this.posY += this.dy;
   }
 }
 
-// Posiciones iniciales SEGURAS (no nacen fuera)
+// Posición segura
 function getSafePosition(radius, max) {
   return Math.random() * (max - 2 * radius) + radius;
 }
 
-let randomRadius = Math.floor(Math.random() * 50 + 30);
+// Crear círculos
+function crearCirculos(cantidad) {
+  circles = [];
 
-let miCirculo = new Circle(
-  getSafePosition(randomRadius, window_width),
-  getSafePosition(randomRadius, window_height),
-  randomRadius,
-  "blue",
-  "Tec1",
-  5
-);
+  for (let i = 0; i < cantidad; i++) {
+    let radius = Math.random() * 30 + 20;
+    let speed = Math.random() * 2 + 1;
 
-let miCirculo2 = new Circle(
-  getSafePosition(randomRadius, window_width),
-  getSafePosition(randomRadius, window_height),
-  randomRadius,
-  "red",
-  "Tec2",
-  2
-);
+    let x = getSafePosition(radius, window_width);
+    let y = getSafePosition(radius, window_height);
 
-let updateCircle = function () {
-  requestAnimationFrame(updateCircle);
+    circles.push(new Circle(x, y, radius, speed));
+  }
+}
+
+// Aplicar cambios
+function aplicarCambios() {
+  let cantidad = document.getElementById("cantidad").value;
+  let ancho = document.getElementById("anchoCanvas").value;
+  let alto = document.getElementById("altoCanvas").value;
+
+  window_width = parseInt(ancho);
+  window_height = parseInt(alto);
+
+  canvas.width = window_width;
+  canvas.height = window_height;
+
+  crearCirculos(cantidad);
+}
+
+// Animación
+function animate() {
+  requestAnimationFrame(animate);
   ctx.clearRect(0, 0, window_width, window_height);
 
-  miCirculo.update(ctx);
-  miCirculo2.update(ctx);
-};
+  circles.forEach(c => c.update(ctx));
+}
 
-updateCircle();
+// Inicial
+crearCirculos(5);
+animate();

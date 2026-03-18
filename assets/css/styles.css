@@ -1,0 +1,28 @@
+body {
+  background: url("https://images.unsplash.com/photo-1506744038136-46273834b3fb") no-repeat center center/cover;
+  min-height: 100vh;
+  color: white;
+}
+
+/* Glassmorphism */
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 15px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-navbar,
+.glass-footer {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+/* 🔥 QUITAMOS EL RECTÁNGULO */
+canvas {
+  border-radius: 15px;
+  background: transparent; /* CLAVE */
+  display: block;
+  margin: auto;
+}
