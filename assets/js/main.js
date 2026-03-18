@@ -9,17 +9,23 @@ canvas.height = window_height;
 
 let circles = [];
 
-// Clase con efecto glass + color
+// 🔥 Física mejorada
+let gravedad = 0.4;
+let rebote = 0.92; // 🔥 MÁS rebote
+let friccion = 0.999;
+
 class Circle {
-  constructor(x, y, radius, speed) {
+  constructor(x, y, radius, dx, dy, tipo) {
     this.posX = x;
     this.posY = y;
     this.radius = radius;
 
-    this.dx = (Math.random() > 0.5 ? 1 : -1) * speed;
-    this.dy = (Math.random() > 0.5 ? 1 : -1) * speed;
+    this.dx = dx;
+    this.dy = dy;
 
-    this.hue = Math.random() * 360; // 🎨 color dinámico
+    this.tipo = tipo;
+
+    this.hue = Math.random() * 360;
   }
 
   draw(ctx) {
@@ -30,12 +36,11 @@ class Circle {
       this.posX, this.posY, this.radius
     );
 
-    gradient.addColorStop(0, `hsla(${this.hue}, 100%, 80%, 0.8)`);
-    gradient.addColorStop(1, `hsla(${this.hue}, 100%, 50%, 0.2)`);
+    gradient.addColorStop(0, `hsla(${this.hue}, 100%, 80%, 0.9)`);
+    gradient.addColorStop(1, `hsla(${this.hue}, 100%, 50%, 0.3)`);
 
     ctx.fillStyle = gradient;
-    ctx.strokeStyle = `hsla(${this.hue}, 100%, 70%, 0.6)`;
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = `hsla(${this.hue}, 100%, 70%, 0.8)`;
 
     ctx.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2);
     ctx.fill();
@@ -47,24 +52,42 @@ class Circle {
   update(ctx) {
     this.draw(ctx);
 
-    if (this.posX + this.radius >= window_width) {
-      this.posX = window_width - this.radius;
-      this.dx *= -1;
+    // 🪐 ASTEROIDES (sin gravedad)
+    if (this.tipo !== "asteroides") {
+      this.dy += gravedad;
     }
 
-    if (this.posX - this.radius <= 0) {
-      this.posX = this.radius;
-      this.dx *= -1;
-    }
-
+    // suelo
     if (this.posY + this.radius >= window_height) {
       this.posY = window_height - this.radius;
-      this.dy *= -1;
+      this.dy *= -rebote;
+
+      // 🔥 rebotan mucho más
+      if (this.tipo === "superrebote") {
+        this.dy *= 1.1;
+      }
     }
 
+    // techo
     if (this.posY - this.radius <= 0) {
       this.posY = this.radius;
-      this.dy *= -1;
+      this.dy *= -rebote;
+    }
+
+    // paredes
+    if (this.posX + this.radius >= window_width || this.posX - this.radius <= 0) {
+      this.dx *= -rebote;
+
+      // 🔥 rebote extra lateral
+      if (this.tipo === "superrebote") {
+        this.dx *= 1.05;
+      }
+    }
+
+    // ASTEROIDES: movimiento libre
+    if (this.tipo === "asteroides") {
+      this.dx *= 0.999;
+      this.dy *= 0.999;
     }
 
     this.posX += this.dx;
@@ -72,23 +95,56 @@ class Circle {
   }
 }
 
-// Posición segura
-function getSafePosition(radius, max) {
-  return Math.random() * (max - 2 * radius) + radius;
-}
-
-// Crear círculos
+// 🎯 CREAR EFECTOS
 function crearCirculos(cantidad) {
+  let efecto = document.getElementById("efecto").value;
   circles = [];
 
   for (let i = 0; i < cantidad; i++) {
-    let radius = Math.random() * 30 + 20;
-    let speed = Math.random() * 2 + 1;
+    let radius = Math.random() * 20 + 10;
 
-    let x = getSafePosition(radius, window_width);
-    let y = getSafePosition(radius, window_height);
+    let x, y, dx, dy;
 
-    circles.push(new Circle(x, y, radius, speed));
+    // 💥 EXPLOSIÓN
+    if (efecto === "explosion") {
+      x = window_width / 2;
+      y = window_height / 2;
+
+      let angle = Math.random() * Math.PI * 2;
+      let speed = Math.random() * 12 + 6;
+
+      dx = Math.cos(angle) * speed;
+      dy = Math.sin(angle) * speed;
+    }
+
+    // 🌧️ LLUVIA
+    if (efecto === "lluvia") {
+      x = Math.random() * window_width;
+      y = -radius;
+
+      dx = (Math.random() - 0.5) * 3;
+      dy = Math.random() * 8 + 10;
+    }
+
+    // 🪐 ASTEROIDES
+    if (efecto === "asteroides") {
+      x = Math.random() * window_width;
+      y = Math.random() * window_height;
+
+      dx = (Math.random() - 0.5) * 6;
+      dy = (Math.random() - 0.5) * 6;
+    }
+
+    // 🏀 SUPER REBOTE EXTREMO
+    if (efecto === "superrebote") {
+      x = Math.random() * window_width;
+      y = Math.random() * window_height / 2;
+
+      dx = (Math.random() - 0.5) * 12;
+      dy = Math.random() * 6;
+    }
+
+    circles.push(new Circle(x, y, radius, dx, dy, efecto));
   }
 }
 
@@ -116,5 +172,5 @@ function animate() {
 }
 
 // Inicial
-crearCirculos(5);
+crearCirculos(10);
 animate();
