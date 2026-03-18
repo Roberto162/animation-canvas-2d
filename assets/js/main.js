@@ -1,11 +1,10 @@
 const canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-//Obtiene las dimensiones de la pantalla actual
-const window_height = window.innerHeight;
-const window_width = window.innerWidth;
+// Dimensiones
+const window_height = window.innerHeight / 2;
+const window_width = window.innerWidth / 2;
 
-//El canvas tiene las mismas dimensiones que la pantalla
 canvas.height = window_height;
 canvas.width = window_width;
 
@@ -35,72 +34,75 @@ class Circle {
     context.fillText(this.text, this.posX, this.posY);
 
     context.lineWidth = 2;
-    context.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2, false);
+    context.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2);
     context.stroke();
     context.closePath();
   }
 
   update(context) {
-    //context.clearRect(0, 0, window_width, window_height);
-
     this.draw(context);
 
-    //Si el círculo supera el margen derecho entonces se mueve a la izquierda
-    if (this.posX + this.radius > window_width) {
+    // 👉 BORDE DERECHO
+    if (this.posX + this.radius >= window_width) {
+      this.posX = window_width - this.radius; // CORRIGE posición
       this.dx = -this.dx;
     }
 
-    //Si el círculo supera el margen izquierdo entonces se mueve a la derecha
-    if (this.posX - this.radius < 0) {
+    // 👉 BORDE IZQUIERDO
+    if (this.posX - this.radius <= 0) {
+      this.posX = this.radius; // CORRIGE posición
       this.dx = -this.dx;
     }
 
-    //Si el círculo supera el margen superior entonces se mueve hacia abajo
-    if (this.posY - this.radius < 0) {
+    // 👉 BORDE SUPERIOR
+    if (this.posY - this.radius <= 0) {
+      this.posY = this.radius; // CORRIGE posición
       this.dy = -this.dy;
     }
 
-    //Si el círculo supera el margen inferior entonces se mueve hacia arriba
-    if (this.posY + this.radius > window_height) {
+    // 👉 BORDE INFERIOR
+    if (this.posY + this.radius >= window_height) {
+      this.posY = window_height - this.radius; // CORRIGE posición
       this.dy = -this.dy;
     }
 
+    // Movimiento
     this.posX += this.dx;
     this.posY += this.dy;
   }
 }
 
-/* let arrayCircle=[];
+// Posiciones iniciales SEGURAS (no nacen fuera)
+function getSafePosition(radius, max) {
+  return Math.random() * (max - 2 * radius) + radius;
+}
 
-for(let i=0; i<10;i++){
+let randomRadius = Math.floor(Math.random() * 50 + 30);
 
-    let randomX =  Math.random()* window_width;
-    let randomY =  Math.random()* window_height;
-    let randomRadius = Math.floor(Math.random()*100 + 30);
+let miCirculo = new Circle(
+  getSafePosition(randomRadius, window_width),
+  getSafePosition(randomRadius, window_height),
+  randomRadius,
+  "blue",
+  "Tec1",
+  5
+);
 
-    let miCirculo = new Circle(randomX, randomY, randomRadius, 'blue', i+1);
-
-    //Agrega el objeto al array
-    arrayCircle.push(miCirculo);
-    arrayCircle[i].draw(ctx);
-} */
-
-let randomX = Math.random() * window_width;
-let randomY = Math.random() * window_height;
-let randomRadius = Math.floor(Math.random() * 100 + 30);
-
-let miCirculo = new Circle(randomX, randomY, randomRadius, "blue", "Tec1", 5);
-miCirculo.draw(ctx);
-
-let miCirculo2 = new Circle(randomX, randomY, randomRadius, "red", "Tec2", 2);
-miCirculo2.draw(ctx);
+let miCirculo2 = new Circle(
+  getSafePosition(randomRadius, window_width),
+  getSafePosition(randomRadius, window_height),
+  randomRadius,
+  "red",
+  "Tec2",
+  2
+);
 
 let updateCircle = function () {
   requestAnimationFrame(updateCircle);
   ctx.clearRect(0, 0, window_width, window_height);
+
   miCirculo.update(ctx);
   miCirculo2.update(ctx);
 };
 
 updateCircle();
-
