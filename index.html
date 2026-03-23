@@ -17,56 +17,75 @@
 <body style="background: url('./assets/img/imag.jpg') no-repeat center center/cover; min-height: 100vh; color: white;">
 
   <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg glass-navbar">
-    <div class="container-fluid">
-      <span class="navbar-brand text-white fw-bold">Canvas App</span>
-    </div>
-  </nav>
+ <nav class="navbar navbar-expand-lg glass-navbar">
+  <div class="container-fluid">
+
+    <span class="navbar-brand text-white fw-bold">
+      Canvas Animation App
+    </span>
+
+    <span class="text-white small">
+      Simulación de animaciones con HTML5 Canvas
+    </span>
+
+  </div>
+</nav>
 
   <div class="container py-4">
 
-    <!-- CONTROLES -->
-    <div class="glass-card p-4 mb-4">
-      <h4 class="mb-3">Controles</h4>
+<!-- CONTROLES HORIZONTALES -->
+<div class="glass-card dark-panel p-3 mb-3 shadow-sm">
 
-      <div class="row g-3 align-items-end">
+  <!-- TITULO -->
+  <div class="text-center mb-2">
+    <h6 class="fw-bold mb-0">Controles</h6>
+    <small class="text-muted">
+      Configure el efecto, la cantidad de círculos y el tamaño del lienzo
+    </small>
+  </div>
 
-        <!-- EFECTO -->
-        <div class="col-md-3">
-          <label class="form-label">Efecto</label>
-          <select id="efecto" class="form-control">
-  <option value="explosion">💥 Explosión</option>
-  <option value="lluvia">🌧️ Lluvia</option>
-  <option value="asteroides">🪐 Asteroides (flotan)</option>
-  <option value="superrebote">🏀 Súper rebote EXTREMO</option>
-</select>
-        </div>
+  <div class="row align-items-end g-3 text-center justify-content-center">
 
-        <!-- CANTIDAD -->
-        <div class="col-md-3">
-          <label class="form-label">Cantidad de círculos</label>
-          <input type="number" id="cantidad" class="form-control" min="1" max="100" value="5">
-        </div>
-
-        <!-- ANCHO -->
-        <div class="col-md-3">
-          <label class="form-label">Ancho del canvas</label>
-          <input type="number" id="anchoCanvas" class="form-control" value="600">
-        </div>
-
-        <!-- ALTO -->
-        <div class="col-md-3">
-          <label class="form-label">Alto del canvas</label>
-          <input type="number" id="altoCanvas" class="form-control" value="400">
-        </div>
-
-        <!-- BOTÓN -->
-        <div class="col-md-3 d-grid">
-          <button class="btn btn-light" onclick="aplicarCambios()">Aplicar</button>
-        </div>
-
-      </div>
+    <!-- EFECTO -->
+    <div class="col-md-3">
+      <label class="form-label">Efecto</label>
+      <select id="efecto" class="form-select text-center">
+        <option value="explosion">Explosión</option>
+        <option value="lluvia">Lluvia</option>
+        <option value="asteroides">Asteroides</option>
+        <option value="superrebote">Súper rebote</option>
+      </select>
     </div>
+
+    <!-- CANTIDAD -->
+    <div class="col-md-2">
+      <label class="form-label">Cantidad</label>
+      <input type="number" id="cantidad" class="form-control text-center" value="10">
+    </div>
+
+    <!-- ANCHO -->
+    <div class="col-md-2">
+      <label class="form-label">Ancho</label>
+      <input type="number" id="anchoCanvas" class="form-control text-center" value="600">
+    </div>
+
+    <!-- ALTO -->
+    <div class="col-md-2">
+      <label class="form-label">Alto</label>
+      <input type="number" id="altoCanvas" class="form-control text-center" value="400">
+    </div>
+
+    <!-- BOTÓN -->
+    <div class="col-md-2 d-grid">
+      <button class="btn btn-dark-custom" onclick="aplicarCambios()">
+        Aplicar
+      </button>
+    </div>
+
+  </div>
+
+</div>
+</div>
 
     <!-- CANVAS -->
     <div class="glass-card p-3 text-center">
@@ -75,10 +94,22 @@
 
   </div>
 
-  <!-- FOOTER -->
   <footer class="glass-footer text-center py-3 mt-4">
-    <span>Desarrollado por <strong>Jesus Roberto Hernandez Benitez</strong></span>
-  </footer>
+
+
+  <div class="small">
+    Simulación de animaciones usando HTML5 Canvas y JavaScript
+  </div>
+
+  <div class="small">
+    Desarrollado por <strong>Jesus Roberto Hernandez Benitez</strong>
+  </div>
+
+  <div class="small">
+    Ingeniería en Sistemas | 2026
+  </div>
+
+</footer>
 
   <script src="./assets/js/main.js"></script>
 
